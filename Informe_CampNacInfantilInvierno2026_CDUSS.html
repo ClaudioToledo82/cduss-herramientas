@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campeonato Nacional Infantil de Invierno 2026 — Informe CDUSS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --azul:      #185FA5;
+  --azul-cl:   #E6F1FB;
+  --azul-dk:   #0C447C;
+  --verde:     #0F6E56;
+  --verde-cl:  #E1F5EE;
+  --verde-dk:  #085041;
+  --coral:     #993C1D;
+  --coral-cl:  #FAECE7;
+  --coral-dk:  #712B13;
+  --morado:    #534AB7;
+  --morado-cl: #EEEDFE;
+  --morado-dk: #3C3489;
+  --pink:      #993556;
+  --pink-cl:   #FBEAF0;
+  --pink-dk:   #72243E;
+  --amber:     #854F0B;
+  --amber-cl:  #FAEEDA;
+  --amber-dk:  #633806;
+  --gris:      #5F5E5A;
+  --gris-cl:   #F1EFE8;
+  --gris-md:   #D3D1C7;
+  --negro:     #2C2C2A;
+  --rojo-cl:   #FCEBEB;
+  --rojo:      #A32D2D;
+  --verde2-cl: #EAF3DE;
+  --verde2:    #27500A;
+  --bg:        #F8F7F4;
+  --blanco:    #ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--negro);font-size:14px;line-height:1.6;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--azul);display:flex;align-items:center;gap:0;padding:0 24px;height:48px;overflow-x:auto;white-space:nowrap;}
+nav a{color:rgba(255,255,255,.75);text-decoration:none;font-size:12px;font-weight:500;padding:0 14px;height:48px;display:inline-flex;align-items:center;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;flex-shrink:0;}
+nav a:hover,nav a.active{color:#fff;border-bottom-color:#fff;}
+nav .brand{color:#fff;font-size:13px;font-weight:700;margin-right:16px;padding-left:0;border:none!important;flex-shrink:0;}
+
+/* HERO */
+.hero{background:var(--azul);color:#fff;padding:48px 40px 40px;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-60px;top:-60px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.04);}
+.hero-eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-bottom:10px;}
+.hero h1{font-size:28px;font-weight:700;line-height:1.2;margin-bottom:8px;}
+.hero-sub{font-size:14px;opacity:.75;margin-bottom:28px;}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap;}
+.hero-stat .n{font-size:36px;font-weight:700;line-height:1;}
+.hero-stat .l{font-size:11px;opacity:.65;margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+
+/* LAYOUT */
+.container{max-width:1100px;margin:0 auto;padding:0 24px;}
+.section{padding:48px 0 32px;}
+.section-title{font-size:11px;font-weight:600;color:var(--gris);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.section h2{font-size:22px;font-weight:700;color:var(--negro);margin-bottom:6px;}
+.section-desc{font-size:13px;color:var(--gris);line-height:1.6;margin-bottom:28px;max-width:720px;}
+.divider{border:none;border-top:1px solid var(--gris-md);margin:0;}
+
+/* METRIC CARDS */
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;}
+.metric{padding:16px 20px;border-radius:10px;}
+.metric .l{font-size:11px;color:var(--gris);margin-bottom:4px;}
+.metric .n{font-size:28px;font-weight:700;line-height:1;}
+.metric .s{font-size:11px;color:var(--gris);margin-top:3px;}
+.m-azul{background:var(--azul-cl);} .m-azul .n{color:var(--azul-dk);}
+.m-verde{background:var(--verde-cl);} .m-verde .n{color:var(--verde-dk);}
+.m-coral{background:var(--coral-cl);} .m-coral .n{color:var(--coral-dk);}
+.m-morado{background:var(--morado-cl);} .m-morado .n{color:var(--morado-dk);}
+
+/* CHART */
+.chart-card{background:var(--blanco);border:1px solid var(--gris-md);border-radius:12px;padding:24px;margin-bottom:28px;}
+.chart-card h3{font-size:13px;font-weight:600;color:var(--negro);margin-bottom:4px;}
+.chart-caption{font-size:11px;color:var(--gris);margin-bottom:16px;}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:11px;color:var(--gris);}
+.legend span{display:flex;align-items:center;gap:5px;}
+.legend-sq{width:10px;height:10px;border-radius:2px;display:inline-block;}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;margin-bottom:24px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:var(--azul);color:#fff;padding:8px 10px;text-align:left;font-weight:600;font-size:11px;white-space:nowrap;}
+th.center,td.center{text-align:center;}
+td{padding:7px 10px;border-bottom:1px solid var(--gris-cl);color:var(--negro);}
+tr:nth-child(even) td{background:var(--gris-cl);}
+tr:hover td{background:var(--azul-cl);}
+.td-bold{font-weight:700;}
+.td-azul{color:var(--azul-dk);font-weight:700;}
+.td-verde{color:var(--verde-dk);font-weight:700;}
+.td-coral{color:var(--coral-dk);font-weight:700;}
+.t-caption{font-size:11px;color:var(--gris);margin-top:-16px;margin-bottom:24px;}
+
+/* SWIMMER CARDS */
+.swimmer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:28px;}
+.swimmer-card{background:var(--blanco);border:1px solid var(--gris-md);border-radius:12px;padding:18px;}
+.sw-rank{font-size:10px;font-weight:600;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.sw-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:6px;}
+.bg-gold{background:var(--amber-cl);color:var(--amber-dk);}
+.bg-silver{background:var(--gris-cl);color:var(--gris);}
+.bg-bronze{background:var(--coral-cl);color:var(--coral-dk);}
+.sw-name{font-size:15px;font-weight:700;color:var(--negro);margin-bottom:2px;}
+.sw-club{font-size:11px;color:var(--gris);margin-bottom:8px;}
+.sw-pts{font-size:26px;font-weight:700;color:var(--azul);line-height:1;margin-bottom:4px;}
+.sw-events{font-size:10px;color:var(--gris);line-height:1.5;}
+
+/* STYLE COVERAGE */
+.style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:28px;}
+.style-card{border-radius:12px;border:1px solid var(--gris-md);padding:18px;background:var(--blanco);}
+.style-card.c1{border-left:4px solid var(--azul);}
+.style-card.c2{border-left:4px solid var(--verde);}
+.style-card.c3{border-left:4px solid var(--coral);}
+.sc-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-bottom:8px;}
+.sc-name{font-size:14px;font-weight:700;color:var(--negro);margin-bottom:4px;}
+.sc-cov{font-size:24px;font-weight:700;margin-bottom:2px;}
+.sc-sub{font-size:11px;color:var(--gris);margin-bottom:10px;}
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}
+.pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
+.p-libre{background:var(--azul-cl);color:var(--azul-dk);}
+.p-espalda{background:var(--verde-cl);color:var(--verde-dk);}
+.p-pecho{background:var(--amber-cl);color:var(--amber-dk);}
+.p-mariposa{background:var(--morado-cl);color:var(--morado-dk);}
+.p-combinado{background:var(--coral-cl);color:var(--coral-dk);}
+.sc-note{font-size:11px;color:var(--gris);line-height:1.5;}
+
+/* WINNERS TABLE special rows */
+.row-libre td{background:var(--azul-cl)!important;}
+.row-comb td{background:var(--morado-cl)!important;}
+
+/* DEBILIDADES */
+.debil-block{margin-bottom:36px;}
+.debil-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid;}
+.debil-initials{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.debil-club-name{font-size:15px;font-weight:700;color:var(--negro);}
+.debil-club-meta{font-size:11px;color:var(--gris);margin-top:2px;}
+.debil-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:600px){.debil-grid{grid-template-columns:1fr;}}
+.debil-card{background:var(--gris-cl);border-radius:8px;padding:12px 14px;}
+.debil-title{font-size:12px;font-weight:700;color:var(--negro);margin-bottom:4px;}
+.debil-desc{font-size:11px;color:var(--gris);line-height:1.5;}
+.sev{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle;}
+.sev-alta{background:var(--rojo-cl);color:var(--rojo);}
+.sev-media{background:var(--amber-cl);color:var(--amber-dk);}
+.sev-leve{background:var(--verde2-cl);color:var(--verde2);}
+
+/* MATRIX */
+.matrix-wrap{overflow-x:auto;margin-bottom:16px;}
+.matrix{border-collapse:collapse;font-size:11px;min-width:800px;}
+.matrix th{background:var(--azul);color:#fff;padding:6px 8px;font-size:10px;font-weight:600;text-align:center;border:1px solid rgba(255,255,255,.15);}
+.matrix th.col-club{text-align:left;min-width:160px;}
+.matrix td{padding:5px 8px;border:1px solid var(--gris-md);text-align:center;font-size:10px;font-weight:600;}
+.matrix td.td-club{text-align:left;font-weight:700;font-size:11px;color:var(--negro);}
+.cell-ok{background:var(--verde2-cl);color:var(--verde2);}
+.cell-warn{background:var(--amber-cl);color:var(--amber-dk);}
+.cell-bad{background:var(--rojo-cl);color:var(--rojo);}
+.matrix-legend{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;color:var(--gris);margin-bottom:24px;}
+.ml-item{display:flex;align-items:center;gap:6px;}
+.ml-sq{width:14px;height:14px;border-radius:3px;border:1px solid var(--gris-md);}
+
+/* CONCLUSIONES */
+.conclusion-list{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.conclusion{background:var(--blanco);border:1px solid var(--gris-md);border-radius:10px;padding:16px 18px;display:flex;gap:14px;}
+.conclusion-num{font-size:20px;font-weight:700;color:var(--azul);opacity:.35;flex-shrink:0;line-height:1;padding-top:2px;}
+.conclusion-title{font-size:13px;font-weight:700;color:var(--azul);margin-bottom:4px;}
+.conclusion-text{font-size:12px;color:var(--gris);line-height:1.6;}
+
+/* INFO BOX */
+.info-box{background:var(--azul-cl);border-left:3px solid var(--azul);border-radius:0 8px 8px 0;padding:12px 16px;font-size:12px;color:var(--azul-dk);line-height:1.6;margin-bottom:20px;}
+
+/* FOOTER */
+footer{background:var(--negro);color:rgba(255,255,255,.55);text-align:center;padding:28px 24px;font-size:11px;line-height:1.7;margin-top:48px;}
+footer strong{color:rgba(255,255,255,.85);}
+
+/* GENERIC */
+.sub-h{font-size:16px;font-weight:700;color:var(--negro);margin:28px 0 12px;}
+.note{font-size:11px;color:var(--gris);margin-top:-12px;margin-bottom:20px;}
+@media(max-width:700px){
+  .hero{padding:32px 20px 28px;}
+  .hero h1{font-size:20px;}
+  .hero-stat .n{font-size:26px;}
+  .container{padding:0 16px;}
+  .debil-grid{grid-template-columns:1fr;}
+  .swimmer-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">CDUSS · Invierno 2026</span>
+  <a href="#presencia">Presencia</a>
+  <a href="#nadadores">Nadadores</a>
+  <a href="#cobertura">Cobertura</a>
+  <a href="#pruebas">400L / 200IM</a>
+  <a href="#debilidades">Puntos débiles</a>
+  <a href="#matriz">Matriz</a>
+  <a href="#conclusiones">Conclusiones</a>
+</nav>
+
+<div class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">Club Deportivo USS · Informe de análisis de rendimiento</div>
+    <h1>Campeonato Nacional Infantil de Invierno 2026</h1>
+    <div class="hero-sub">18 al 21 de junio de 2026 · Piscina Larga 50 m · Categorías 10, 11 y 12 años</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="n">62</div><div class="l">Pruebas con final</div></div>
+      <div class="hero-stat"><div class="n">28</div><div class="l">Clubes en finales</div></div>
+      <div class="hero-stat"><div class="n">5</div><div class="l">Clubes analizados</div></div>
+      <div class="hero-stat"><div class="n">13</div><div class="l">Dimensiones evaluadas</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ 1. PRESENCIA -->
+<div class="section" id="presencia">
+  <div class="container">
+    <div class="section-title">Sección 1</div>
+    <h2>Presencia de clubes en finales</h2>
+    <p class="section-desc">Plazas ocupadas en finales individuales y relevos por cada club. Los tres primeros concentran el 43,6 % de todas las plazas en final del campeonato.</p>
+
+    <div class="metric-row">
+      <div class="metric m-azul"><div class="l">Pruebas con final</div><div class="n">62</div><div class="s">eventos totales</div></div>
+      <div class="metric m-verde"><div class="l">Clubes con ≥ 1 final</div><div class="n">28</div><div class="s">de ~35 participantes</div></div>
+      <div class="metric m-coral"><div class="l">Finales top-3 clubes</div><div class="n">82</div><div class="s">plazas acumuladas</div></div>
+      <div class="metric m-morado"><div class="l">Categorías evaluadas</div><div class="n">6</div><div class="s">10 · 11 · 12 años D+V</div></div>
+    </div>
+
+    <div class="chart-card">
+      <h3>Total de finales por club (individuales + relevos)</h3>
+      <p class="chart-caption">Los 12 clubes con mayor presencia en finales del campeonato.</p>
+      <div style="position:relative;width:100%;height:300px;">
+        <canvas id="chartPresencia" role="img" aria-label="Finales por club en el campeonato">Número de finales por club.</canvas>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Club</th>
+          <th class="center">Finales ind.</th>
+          <th class="center">Relevos fin.</th>
+          <th class="center">Total</th>
+          <th class="center">% del total</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="td-bold" style="color:var(--azul-dk)">Club Deportivo Estadio Mayor</td><td class="center">24</td><td class="center">8</td><td class="center td-bold">32</td><td class="center td-azul">17,0 %</td></tr>
+          <tr><td class="td-bold">Stade Francais</td><td class="center">20</td><td class="center">7</td><td class="center td-bold">27</td><td class="center">14,4 %</td></tr>
+          <tr><td class="td-bold">Asoc. de Natación de Talca</td><td class="center">17</td><td class="center">6</td><td class="center td-bold">23</td><td class="center">12,2 %</td></tr>
+          <tr><td>Asoc. Acuáticos Valparaíso</td><td class="center">14</td><td class="center">6</td><td class="center">20</td><td class="center">10,6 %</td></tr>
+          <tr><td>Club Deportivo UC</td><td class="center">14</td><td class="center">5</td><td class="center">19</td><td class="center">10,1 %</td></tr>
+          <tr><td>Asociación Puertas del Sol</td><td class="center">13</td><td class="center">5</td><td class="center">18</td><td class="center">9,6 %</td></tr>
+          <tr><td>Stadio Italiano</td><td class="center">12</td><td class="center">5</td><td class="center">17</td><td class="center">9,0 %</td></tr>
+          <tr><td>Club Polaris</td><td class="center">10</td><td class="center">4</td><td class="center">14</td><td class="center">7,4 %</td></tr>
+          <tr><td>Club Nielol Sin Fronteras</td><td class="center">10</td><td class="center">4</td><td class="center">14</td><td class="center">7,4 %</td></tr>
+          <tr><td>Asociación Los Lagos</td><td class="center">9</td><td class="center">4</td><td class="center">13</td><td class="center">6,9 %</td></tr>
+          <tr><td>Club Orcas de Aysén</td><td class="center">8</td><td class="center">3</td><td class="center">11</td><td class="center">5,9 %</td></tr>
+          <tr><td>Deportes Acuáticos Coquimbo</td><td class="center">6</td><td class="center">3</td><td class="center">9</td><td class="center">4,8 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="t-caption">Tabla 1 — Los tres primeros clubes concentran el 43,6 % de todas las plazas en final.</p>
+  </div>
+</div>
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ 2. NADADORES -->
+<div class="section" id="nadadores">
+  <div class="container">
+    <div class="section-title">Sección 2</div>
+    <h2>Top 3 nadadores del campeonato</h2>
+    <p class="section-desc">Puntuación estimada según sistema FINA/FECHIDA: 1°=9 pts, 2°=7 pts, 3°=6 pts, 4°=5 pts, 5°=4 pts, 6°=3 pts, 7°=2 pts, 8°=1 pt. Los relevos con puntaje J se contabilizan de forma ponderada.</p>
+
+    <div class="sub-h">Damas</div>
+    <div class="swimmer-grid">
+      <div class="swimmer-card">
+        <div class="sw-rank"><span class="sw-badge bg-gold">1°</span> Damas</div>
+        <div class="sw-name">Valdes, Alicia</div>
+        <div class="sw-club">Club Deportivo Estadio Mayor · D-12</div>
+        <div class="sw-pts">~55 pts</div>
+        <div class="sw-events">1° 400L · 1° 400IM · 1° 200Mariposa · 1° 100Mariposa · 2° 200IM · relevos (varios)</div>
+      </div>
+      <div class="swimmer-card">
+        <div class="sw-rank"><span class="sw-badge bg-silver">2°</span> Damas</div>
+        <div class="sw-name">Aravena, Catalina</div>
+        <div class="sw-club">Stade Francais · D-12</div>
+        <div class="sw-pts" style="color:var(--gris)">~46 pts</div>
+        <div class="sw-events">1° 200Esp · 1° 100Esp · 1° 200IM · 1° 100Mariposa · 2° 400IM · relevos</div>
+      </div>
+      <div class="swimmer-card">
+        <div class="sw-rank"><span class="sw-badge bg-bronze">3°</span> Damas</div>
+        <div class="sw-name">Crespo, Paz Emilia</div>
+        <div class="sw-club">Club Nielol Sin Fronteras · D-11</div>
+        <div class="sw-pts" style="color:var(--coral)">~41 pts</div>
+        <div class="sw-events">1° 200IM · 1° 100L · 2° 100Esp · 1° 800L · 1° 400L · relevos</div>
+      </div>
+    </div>
+
+    <div class="sub-h">Varones</div>
+    <div class="swimmer-grid">
+      <div class="swimmer-card">
+        <div class="sw-rank"><span class="sw-badge bg-gold">1°</span> Varones</div>
+        <div class="sw-name">Venegas, Lucas</div>
+        <div class="sw-club">Club Deportivo UC · V-12</div>
+        <div class="sw-pts">~52 pts</div>
+        <div class="sw-events">1° 400L · 1° 200L · 1° 100L · 1° 800L · 2° 100Mariposa · 1° rel. 400L</div>
+      </div>
+      <div class="swimmer-card">
+        <div class="sw-rank"><span class="sw-badge bg-silver">2°</span> Varones</div>
+        <div class="sw-name">Ramirez, Diego</div>
+        <div class="sw-club">Club Deportivo Estadio Mayor · V-12</div>
+        <div class="sw-pts" style="color:var(--gris)">~43 pts</div>
+        <div class="sw-events">1° 100Pecho · 2° 200IM · 1° 200Pecho · 4° 100Esp · relevos (varios)</div>
+      </div>
+      <div class="swimmer-card">
+        <div class="sw-rank"><span class="sw-badge bg-bronze">3°</span> Varones</div>
+        <div class="sw-name">Van De Wyngard, Max</div>
+        <div class="sw-club">Stadio Italiano · V-12</div>
+        <div class="sw-pts" style="color:var(--coral)">~40 pts</div>
+        <div class="sw-events">1° 200IM · 1° 200Mariposa · 1° 100Mariposa · 2° 50L · relevos</div>
+      </div>
+    </div>
+    <p class="note">* Puntos estimados a partir de resultados de finales. Los relevos con puntaje J se prorratean.</p>
+  </div>
+</div>
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ 3. COBERTURA -->
+<div class="section" id="cobertura">
+  <div class="container">
+    <div class="section-title">Sección 3</div>
+    <h2>Top 3 clubes más completos — cobertura en los 5 estilos</h2>
+    <p class="section-desc">Se evalúa presencia en al menos una final individual en cada uno de los 5 estilos (libre, espalda, pecho, mariposa y combinado/IM) en cualquiera de las categorías y en ambos géneros.</p>
+
+    <div class="style-grid">
+      <div class="style-card c1">
+        <span class="sc-badge bg-gold">1° más completo</span>
+        <div class="sc-name">Club Deportivo Estadio Mayor</div>
+        <div class="sc-cov" style="color:var(--azul)">5 / 5 estilos</div>
+        <div class="sc-sub">Varones y Damas · todas las categorías</div>
+        <div class="pills">
+          <span class="pill p-libre">Libre</span>
+          <span class="pill p-espalda">Espalda</span>
+          <span class="pill p-pecho">Pecho</span>
+          <span class="pill p-mariposa">Mariposa</span>
+          <span class="pill p-combinado">Combinado</span>
+        </div>
+        <div class="sc-note">Único club con finales en ambos géneros en los 5 estilos simultáneamente. Domina 10 de 11 categorías de prueba. Presente en todos los relevos F+M+Mixto.</div>
+      </div>
+      <div class="style-card c2">
+        <span class="sc-badge" style="background:var(--verde-cl);color:var(--verde-dk)">2° más completo</span>
+        <div class="sc-name">Stade Francais</div>
+        <div class="sc-cov" style="color:var(--verde)">5 / 5 estilos</div>
+        <div class="sc-sub">Varones y Damas · amplitud en 11 y 12 años</div>
+        <div class="pills">
+          <span class="pill p-libre">Libre</span>
+          <span class="pill p-espalda">Espalda</span>
+          <span class="pill p-pecho">Pecho</span>
+          <span class="pill p-mariposa">Mariposa</span>
+          <span class="pill p-combinado">Combinado</span>
+        </div>
+        <div class="sc-note">Mayor fortaleza en libre y combinado. Domina el 800L femenino y el 400L masculino 11 años (Szigethi 1°, Astorga 2°). Todos sus relevos alcanzaron la final.</div>
+      </div>
+      <div class="style-card c3">
+        <span class="sc-badge bg-bronze">3° más completo</span>
+        <div class="sc-name">Asoc. de Natación de Talca</div>
+        <div class="sc-cov" style="color:var(--coral)">5 / 5 estilos</div>
+        <div class="sc-sub">Varones 12 años · alta cobertura parcial F</div>
+        <div class="pills">
+          <span class="pill p-libre">Libre</span>
+          <span class="pill p-espalda">Espalda</span>
+          <span class="pill p-pecho">Pecho</span>
+          <span class="pill p-mariposa">Mariposa</span>
+          <span class="pill p-combinado">Combinado</span>
+        </div>
+        <div class="sc-note">Motor principal: varones 12 años (Tapia, Moya, Rojas). 1° en 1500L masculino. Relevos mixtos y F+M finalistas. Cobertura femenina concentrada en D12.</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Pos.</th><th>Club</th>
+          <th class="center">Libre</th><th class="center">Espalda</th><th class="center">Pecho</th>
+          <th class="center">Mariposa</th><th class="center">Combinado</th>
+          <th class="center">Cobertura</th><th class="center">Total fin.</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="td-bold" style="color:var(--amber-dk)">1°</td><td class="td-bold" style="color:var(--azul-dk)">CD Estadio Mayor</td>
+              <td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td>
+              <td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td>
+              <td class="center td-azul">5 / 5</td><td class="center">32</td></tr>
+          <tr><td class="td-bold" style="color:var(--gris)">2°</td><td class="td-bold">Stade Francais</td>
+              <td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td>
+              <td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td>
+              <td class="center" style="color:var(--gris);font-weight:700">5 / 5</td><td class="center">27</td></tr>
+          <tr><td class="td-bold" style="color:var(--coral)">3°</td><td class="td-bold">Asoc. Nat. Talca</td>
+              <td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td>
+              <td class="center" style="color:var(--verde2);font-weight:700">Sí</td><td class="center" style="color:var(--verde2);font-weight:700">Sí</td>
+              <td class="center" style="color:var(--coral);font-weight:700">5 / 5</td><td class="center">23</td></tr>
+          <tr><td>4°</td><td>Asoc. Valparaíso</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center">5 / 5</td><td class="center">20</td></tr>
+          <tr><td>5°</td><td>Club Deportivo UC</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center">5 / 5</td><td class="center">19</td></tr>
+          <tr><td>6°</td><td>Club Nielol Sin Fronteras</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center" style="color:var(--rojo);font-weight:700">No</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center" style="color:var(--amber)">4 / 5</td><td class="center">14</td></tr>
+          <tr><td>7°</td><td>Stadio Italiano</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--rojo);font-weight:700">No</td>
+              <td class="center" style="color:var(--verde2)">Sí</td><td class="center" style="color:var(--verde2)">Sí</td>
+              <td class="center" style="color:var(--amber)">4 / 5</td><td class="center">17</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="t-caption">Tabla 2 — Cobertura de estilos por club. "Sí" indica presencia en al menos una final individual en ese estilo.</p>
+  </div>
+</div>
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ 4. 400L / 200IM -->
+<div class="section" id="pruebas">
+  <div class="container">
+    <div class="section-title">Sección 4</div>
+    <h2>Análisis específico — 400 metros libre y 200 metros combinado</h2>
+    <p class="section-desc">Las 6 versiones de cada prueba (D-10, D-11, D-12 / V-10, V-11, V-12) con los clubes con mayor cantidad de atletas en final y los ganadores por categoría.</p>
+
+    <div class="chart-card">
+      <h3>Finalistas por club — 400 libre y 200 combinado (todas las categorías)</h3>
+      <p class="chart-caption">Suma de finalistas en las 6 versiones de cada prueba.</p>
+      <div class="legend">
+        <span><span class="legend-sq" style="background:#185FA5"></span> 400 libre</span>
+        <span><span class="legend-sq" style="background:#534AB7"></span> 200 combinado</span>
+      </div>
+      <div style="position:relative;width:100%;height:260px;">
+        <canvas id="chartPruebas" role="img" aria-label="Finalistas por club en 400 libre y 200 combinado">Finalistas por club en ambas pruebas.</canvas>
+      </div>
+    </div>
+
+    <div class="sub-h">Ganadores de final por prueba y categoría</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prueba</th><th>Categ.</th><th>1° puesto</th><th>Club</th><th class="center">Tiempo final</th></tr></thead>
+        <tbody>
+          <tr class="row-libre"><td>400 libre</td><td>D-10</td><td>Carvajal, Josefa</td><td>100 Porciento Swim</td><td class="center td-bold">5:23,80</td></tr>
+          <tr class="row-libre"><td>400 libre</td><td>V-10</td><td>Clark, Leon</td><td>Stade Francais</td><td class="center td-bold">5:15,35</td></tr>
+          <tr class="row-libre"><td>400 libre</td><td>D-11</td><td>Valdes, Renatta</td><td>Stade Francais</td><td class="center td-bold">5:06,83</td></tr>
+          <tr class="row-libre"><td>400 libre</td><td>V-11</td><td>Szigethi, Vicente</td><td>Stade Francais</td><td class="center td-bold">4:59,67</td></tr>
+          <tr class="row-libre"><td>400 libre</td><td>D-12</td><td>Valdes, Alicia</td><td>CD Estadio Mayor</td><td class="center td-bold">4:50,33</td></tr>
+          <tr class="row-libre"><td>400 libre</td><td>V-12</td><td>Venegas, Lucas</td><td>Club Deportivo UC</td><td class="center td-bold">4:43,13</td></tr>
+          <tr class="row-comb"><td>200 combinado</td><td>D-10</td><td>Carvajal, Josefa</td><td>100 Porciento Swim</td><td class="center td-bold">2:54,31</td></tr>
+          <tr class="row-comb"><td>200 combinado</td><td>V-10</td><td>Garcia, Adrian</td><td>Stade Francais</td><td class="center td-bold">2:52,83</td></tr>
+          <tr class="row-comb"><td>200 combinado</td><td>D-11</td><td>Crespo, Paz Emilia</td><td>Nielol Sin Fronteras</td><td class="center td-bold">2:42,83</td></tr>
+          <tr class="row-comb"><td>200 combinado</td><td>V-11</td><td>Szigethi, Vicente</td><td>Stade Francais</td><td class="center td-bold">2:40,43</td></tr>
+          <tr class="row-comb"><td>200 combinado</td><td>D-12</td><td>Aravena, Catalina</td><td>Stade Francais</td><td class="center td-bold">2:39,75</td></tr>
+          <tr class="row-comb"><td>200 combinado</td><td>V-12</td><td>Van De Wyngard, Max</td><td>Stadio Italiano</td><td class="center td-bold">2:33,44</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="t-caption">Fondo azul: 400 libre. Fondo morado: 200 combinado.</p>
+
+    <div class="info-box">
+      <strong>Nota estratégica:</strong> Valdes Alicia (Estadio Mayor) y Venegas Lucas (CD UC) son los únicos atletas con finales en <em>ambas</em> pruebas en su categoría, lo que los posiciona como los nadadores más completos en fondo y técnica a nivel 12 años. Szigethi (Stade Francais) hace lo mismo en 11 años varones.
+    </div>
+  </div>
+</div>
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ 5. DEBILIDADES -->
+<div class="section" id="debilidades">
+  <div class="container">
+    <div class="section-title">Sección 5</div>
+    <h2>Análisis de puntos débiles — 5 clubes dominadores</h2>
+    <p class="section-desc">Brechas estructurales de cada club según tres niveles de severidad: <span class="sev sev-alta">Alta</span> ausencia total de finalistas, <span class="sev sev-media">Media</span> un solo atleta o posiciones 6ª–8ª, <span class="sev sev-leve">Leve</span> debilidad relativa frente a las propias fortalezas.</p>
+
+    <!-- CD ESTADIO MAYOR -->
+    <div class="debil-block">
+      <div class="debil-header" style="border-color:var(--azul)">
+        <div class="debil-initials" style="background:var(--azul-cl);color:var(--azul-dk)">EM</div>
+        <div>
+          <div class="debil-club-name">Club Deportivo Estadio Mayor · 32 finales · 1° general</div>
+          <div class="debil-club-meta">Fortalezas: Valdes Alicia (D12), Ramirez Diego (V12), relevos F+M+Mixto.</div>
+        </div>
+      </div>
+      <div class="debil-grid">
+        <div class="debil-card"><div class="debil-title">Pecho femenino — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Ninguna finalista en 100 ni 200m pecho damas en ninguna categoría. El estilo más numeroso del campeonato y el club no aparece.</div></div>
+        <div class="debil-card"><div class="debil-title">Fondo masculino (800L / 1500L) <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Sin finalistas en 800L ni 1500L varones. Ramirez y Vega son velocistas/combinados, no fondistas. Brecha total en resistencia masculina.</div></div>
+        <div class="debil-card"><div class="debil-title">Categoría 11 años varones <span class="sev sev-media">Media</span></div><div class="debil-desc">Solo Guerrero Agustín llega a finales (7° en 100L, 5° en 200IM). El segmento V11 es el eslabón más frágil comparado con V12 y D11.</div></div>
+        <div class="debil-card"><div class="debil-title">Categoría 10 años — profundidad <span class="sev sev-media">Media</span></div><div class="debil-desc">Lobos Gabriela domina D10 pero es una sola atleta. En V10 Gamboa y Chavez están en posiciones intermedias. Dependencia de individualidades.</div></div>
+        <div class="debil-card"><div class="debil-title">Mariposa femenina 10–11 años <span class="sev sev-leve">Leve</span></div><div class="debil-desc">En D11 solo Borquez (3°) y Quenaya (5°) en 100Mariposa. En D10 sin finalistas en mariposa. Contrasta con la supremacía de Valdes Alicia en D12.</div></div>
+        <div class="debil-card"><div class="debil-title">Dependencia de Valdes Alicia <span class="sev sev-leve">Leve</span></div><div class="debil-desc">~60 % de los puntos femeninos en una sola nadadora. Si sube de categoría o no clasifica, el rendimiento femenino cae drásticamente.</div></div>
+      </div>
+    </div>
+
+    <!-- STADE FRANCAIS -->
+    <div class="debil-block">
+      <div class="debil-header" style="border-color:var(--verde)">
+        <div class="debil-initials" style="background:var(--verde-cl);color:var(--verde-dk)">SF</div>
+        <div>
+          <div class="debil-club-name">Stade Francais · 27 finales · 2° general</div>
+          <div class="debil-club-meta">Fortalezas: libre y combinado (Szigethi, Astorga, Valdes Renatta, Aravena). Ausencia en pecho y espalda masculinos.</div>
+        </div>
+      </div>
+      <div class="debil-grid">
+        <div class="debil-card"><div class="debil-title">Pecho masculino — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Cero finalistas en 100 y 200m pecho varones en todas las categorías. Uno de los estilos base del IM y el club no tiene representación.</div></div>
+        <div class="debil-card"><div class="debil-title">Espalda masculina — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Sin finalistas en 100 ni 200m espalda varones. Paradójico: Szigethi gana el 200IM V11 (incluye espalda) pero no rinde en la prueba pura.</div></div>
+        <div class="debil-card"><div class="debil-title">Pecho y espalda femenina D12 — profundidad <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Aravena es la única en espalda D12. En pecho D12, Miranda es 8ª en 100Pecho. Sin segunda atleta competitiva en estilos técnicos.</div></div>
+        <div class="debil-card"><div class="debil-title">800L y 1500L masculinos <span class="sev sev-media">Media</span></div><div class="debil-desc">Sin finalistas en 800L ni 1500L varones. Club de velocidad y medio fondo (400L); el fondo largo es territorio ajeno.</div></div>
+        <div class="debil-card"><div class="debil-title">Categoría 10 años — solo libre <span class="sev sev-media">Media</span></div><div class="debil-desc">En D10 sin ninguna finalista. En V10 Clark y Garcia solo en libre, mariposa e IM; sin espalda ni pecho en la categoría base.</div></div>
+        <div class="debil-card"><div class="debil-title">Dependencia de 3 atletas clave <span class="sev sev-leve">Leve</span></div><div class="debil-desc">Szigethi (V11), Aravena (D12) y Valdes Renatta (D11) generan ~75 % de los puntos. El resto del plantel no llega a finales o lo hace en posiciones bajas.</div></div>
+      </div>
+    </div>
+
+    <!-- TALCA -->
+    <div class="debil-block">
+      <div class="debil-header" style="border-color:var(--coral)">
+        <div class="debil-initials" style="background:var(--coral-cl);color:var(--coral-dk)">AT</div>
+        <div>
+          <div class="debil-club-name">Asoc. de Natación de Talca · 23 finales · 3° general</div>
+          <div class="debil-club-meta">Fortalezas: varones 12 años (Tapia, Moya, Rojas). Sector femenino casi inexistente en finales.</div>
+        </div>
+      </div>
+      <div class="debil-grid">
+        <div class="debil-card"><div class="debil-title">Categoría 10 años — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Cero finalistas en cualquier prueba individual de la categoría 10 años, damas ni varones. La base formativa más joven no existe competitivamente.</div></div>
+        <div class="debil-card"><div class="debil-title">Mariposa femenina — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Sin ninguna finalista en 100 ni 200m mariposa damas en ninguna categoría. Estilo completamente descubierto en el sector femenino.</div></div>
+        <div class="debil-card"><div class="debil-title">Pecho femenino — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Sin finalistas en pecho damas. Coronado (D12) finaliza en espalda y libre pero no en pecho. El estilo técnico femenino más débil.</div></div>
+        <div class="debil-card"><div class="debil-title">11 años varones — prácticamente ausente <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Solo Vergara Máximo en semifinales. En V11 no hay ningún finalista individual. Todo el rendimiento masculino está en 12 años.</div></div>
+        <div class="debil-card"><div class="debil-title">Sector femenino global débil <span class="sev sev-media">Media</span></div><div class="debil-desc">Solo 3 atletas femeninas alcanzan finales: Coronado, Muñoz F. y Espinoza, todas D12. Sin presencia en D10, D11 ni 5 de 7 pruebas D12.</div></div>
+        <div class="debil-card"><div class="debil-title">Pecho masculino — solo semifinales <span class="sev sev-media">Media</span></div><div class="debil-desc">En pecho varones 12 años no tienen finalistas. Tapia y Moya son fondistas de libre/espalda. El pecho masculino no está desarrollado.</div></div>
+      </div>
+    </div>
+
+    <!-- STADIO ITALIANO -->
+    <div class="debil-block">
+      <div class="debil-header" style="border-color:var(--morado)">
+        <div class="debil-initials" style="background:var(--morado-cl);color:var(--morado-dk)">SI</div>
+        <div>
+          <div class="debil-club-name">Stadio Italiano · 17 finales · 5° general</div>
+          <div class="debil-club-meta">Fortalezas: Van De Wyngard (V12), Domke Isidora (D12 espalda/combinado), Vargas Valentina (D11).</div>
+        </div>
+      </div>
+      <div class="debil-grid">
+        <div class="debil-card"><div class="debil-title">Pecho — ausencia total ambos géneros <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Cero finalistas en pecho damas y varones en todas las categorías. Un estilo entero sin representación en ninguna de las 6 versiones de la prueba.</div></div>
+        <div class="debil-card"><div class="debil-title">Categoría 10 años — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Ningún finalista individual en la categoría 10 años. Tavano aparece en algunos resultados pero sin llegar a ninguna final.</div></div>
+        <div class="debil-card"><div class="debil-title">Libre femenino — sin finalistas <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Sin ninguna finalista en 100L, 200L, 400L ni 800L damas. Domke aparece solo en espalda y combinado. El estilo base femenino es un punto ciego total.</div></div>
+        <div class="debil-card"><div class="debil-title">11 años varones — un solo atleta marginal <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Solo Castro Gerónimo en semifinales sin llegar a finales. En V11 no hay finalistas individuales. La generación de reemplazo de Van De Wyngard no existe aún.</div></div>
+        <div class="debil-card"><div class="debil-title">Hiperconcentración en Van De Wyngard <span class="sev sev-media">Media</span></div><div class="debil-desc">~55 % de los puntos masculinos en un solo atleta (200IM, 200Mariposa, 100Mariposa, 50L). Ligori y Silva completan en posiciones 6ª–8ª.</div></div>
+        <div class="debil-card"><div class="debil-title">Fondo femenino y masculino <span class="sev sev-media">Media</span></div><div class="debil-desc">Sin finalistas en 800L ni 1500L en ningún género. Vargas Valentina (D11) es la única con presencia en más de 200m y solo en 400L.</div></div>
+      </div>
+    </div>
+
+    <!-- CD UC -->
+    <div class="debil-block">
+      <div class="debil-header" style="border-color:var(--pink)">
+        <div class="debil-initials" style="background:var(--pink-cl);color:var(--pink-dk)">UC</div>
+        <div>
+          <div class="debil-club-name">Club Deportivo Universidad Católica · 19 finales · 4° general</div>
+          <div class="debil-club-meta">Fortalezas: Venegas Lucas (V12 libre), Cerda Joaquín (V12 técnico), Martinez Anais (D12 IM/mariposa).</div>
+        </div>
+      </div>
+      <div class="debil-grid">
+        <div class="debil-card"><div class="debil-title">Pecho — ausencia total ambos géneros <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Cero finalistas en 100 y 200m pecho damas y varones en todas las categorías. Venegas y Cerda no nadan pecho competitivamente.</div></div>
+        <div class="debil-card"><div class="debil-title">Espalda femenina — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Sin ninguna finalista en espalda damas en ninguna categoría. Martinez nada IM pero no rinde en espalda pura. Yanez Magdalena tampoco tiene presencia en el estilo.</div></div>
+        <div class="debil-card"><div class="debil-title">Categoría 10 años — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Ningún atleta del club llega a ninguna final en la categoría 10 años, damas ni varones. La base formativa más joven no tiene representación.</div></div>
+        <div class="debil-card"><div class="debil-title">11 años damas — ausencia total <span class="sev sev-alta">Alta</span></div><div class="debil-desc">Ninguna finalista en 11 años damas en ningún estilo. El segmento D11 es un vacío completo. Toda la presencia femenina está concentrada en D12.</div></div>
+        <div class="debil-card"><div class="debil-title">Espalda y mariposa masculinas <span class="sev sev-media">Media</span></div><div class="debil-desc">Sin finalistas en espalda varones. En mariposa solo Cerda V12 (5° en 200Mariposa). Sin Cerda, el club desaparece de los estilos técnicos masculinos.</div></div>
+        <div class="debil-card"><div class="debil-title">Hiperconcentración en Venegas Lucas <span class="sev sev-media">Media</span></div><div class="debil-desc">Venegas genera ~65 % de los puntos masculinos (400L, 200L, 100L, 800L, 1500L). Al subir de categoría, el club masculino queda sin reemplazo visible en V11 ni V10.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ 6. MATRIZ -->
+<div class="section" id="matriz">
+  <div class="container">
+    <div class="section-title">Sección 6</div>
+    <h2>Mapa comparativo de brechas — los 5 clubes</h2>
+    <p class="section-desc">Visión consolidada de las 13 dimensiones evaluadas: 5 estilos × género, fondo largo, y categorías etarias. Permite comparar directamente dónde cada club tiene cobertura, debilidad o ausencia total.</p>
+
+    <div class="matrix-legend">
+      <div class="ml-item"><div class="ml-sq" style="background:var(--verde2-cl);border-color:var(--verde2)"></div> Cubierto (finalistas)</div>
+      <div class="ml-item"><div class="ml-sq" style="background:var(--amber-cl);border-color:var(--amber)"></div> Débil (1 atleta o pos. baja)</div>
+      <div class="ml-item"><div class="ml-sq" style="background:var(--rojo-cl);border-color:var(--rojo)"></div> Ausente (sin finalistas)</div>
+    </div>
+
+    <div class="matrix-wrap">
+      <table class="matrix">
+        <thead>
+          <tr>
+            <th class="col-club">Club</th>
+            <th>Libre<br>V+D</th>
+            <th>Espalda<br>D</th>
+            <th>Espalda<br>V</th>
+            <th>Pecho<br>D</th>
+            <th>Pecho<br>V</th>
+            <th>Mariposa<br>D</th>
+            <th>Mariposa<br>V</th>
+            <th>IM D</th>
+            <th>IM V</th>
+            <th>Fondo<br>largo V</th>
+            <th>Cat.<br>10</th>
+            <th>V11</th>
+            <th>D11</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-club" style="color:var(--azul-dk)">CD Estadio Mayor</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-bad">✗ No</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-warn">Débil</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-bad">No V</td><td class="cell-warn">Solo D</td>
+            <td class="cell-warn">Débil</td><td class="cell-ok">✓ Sí</td>
+          </tr>
+          <tr>
+            <td class="td-club" style="color:var(--verde-dk)">Stade Francais</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-warn">Solo D12</td><td class="cell-bad">✗ No</td>
+            <td class="cell-warn">D12</td><td class="cell-bad">✗ No</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-bad">✗ No</td><td class="cell-warn">Solo V</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-bad">✗ No</td>
+          </tr>
+          <tr>
+            <td class="td-club" style="color:var(--coral-dk)">Asoc. Nat. Talca</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-warn">Solo D12</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-bad">✗ No</td><td class="cell-bad">✗ No</td>
+            <td class="cell-bad">✗ No D</td><td class="cell-warn">Solo V</td>
+            <td class="cell-warn">D12</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-ok">✓ Sí V</td><td class="cell-bad">✗ No</td>
+            <td class="cell-bad">✗ No</td><td class="cell-bad">✗ No</td>
+          </tr>
+          <tr>
+            <td class="td-club" style="color:var(--morado-dk)">Stadio Italiano</td>
+            <td class="cell-warn">Solo V12</td><td class="cell-warn">Solo D12</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-bad">✗ No</td><td class="cell-bad">✗ No</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-bad">✗ No</td><td class="cell-bad">✗ No</td>
+            <td class="cell-bad">✗ No</td><td class="cell-warn">Solo D11</td>
+          </tr>
+          <tr>
+            <td class="td-club" style="color:var(--pink-dk)">CD Univ. Católica</td>
+            <td class="cell-ok">✓ Sí</td><td class="cell-bad">✗ No</td><td class="cell-bad">✗ No</td>
+            <td class="cell-bad">✗ No</td><td class="cell-bad">✗ No</td>
+            <td class="cell-warn">Solo D12</td><td class="cell-warn">Solo V12</td>
+            <td class="cell-warn">Solo D12</td><td class="cell-ok">✓ Sí</td>
+            <td class="cell-warn">Solo V</td><td class="cell-bad">✗ No</td>
+            <td class="cell-warn">Solo V</td><td class="cell-bad">✗ No</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<hr class="divider">
+
+<!-- ═══════════════════════════════════════════════════════ 7. CONCLUSIONES -->
+<div class="section" id="conclusiones">
+  <div class="container">
+    <div class="section-title">Sección 7</div>
+    <h2>Conclusiones estratégicas transversales</h2>
+    <p class="section-desc">Cinco patrones críticos que emergen del análisis y definen las prioridades de desarrollo para el próximo ciclo competitivo.</p>
+
+    <div class="conclusion-list">
+      <div class="conclusion">
+        <div class="conclusion-num">1</div>
+        <div>
+          <div class="conclusion-title">Pecho femenino — la brecha de los 5 clubes</div>
+          <div class="conclusion-text">Es el único denominador común ausente o muy débil en los 5 clubes analizados. Quien desarrolle una pechista D10 o D11 competitiva en la próxima temporada acumula puntos que hoy reparten solo Puertas del Sol (Zuñiga Antonia) y Pta. Arenas sin competencia real del top-5. Son 9+7 puntos disponibles por prueba, dos categorías.</div>
+        </div>
+      </div>
+      <div class="conclusion">
+        <div class="conclusion-num">2</div>
+        <div>
+          <div class="conclusion-title">Categoría 10 años — indicador de sostenibilidad</div>
+          <div class="conclusion-text">Cuatro de los cinco clubes tienen ausencia total o presencia individual en la categoría 10 años. Esta es la ventana de proyección a 2-3 temporadas: el trabajo formativo actual determina el ranking futuro. Solo Estadio Mayor (Lobos D10) y Stade Francais (Clark/Garcia V10) tienen base visible.</div>
+        </div>
+      </div>
+      <div class="conclusion">
+        <div class="conclusion-num">3</div>
+        <div>
+          <div class="conclusion-title">Dependencia de un solo atleta — riesgo sistémico</div>
+          <div class="conclusion-text">CD UC concentra ~65 % de puntos masculinos en Venegas Lucas (V12). Stadio Italiano el ~55 % en Van De Wyngard (V12). Ambos suben de categoría en el corto plazo: sin desarrollo de V11 competitivo, ambos clubes perderán posiciones bruscamente en el próximo ciclo.</div>
+        </div>
+      </div>
+      <div class="conclusion">
+        <div class="conclusion-num">4</div>
+        <div>
+          <div class="conclusion-title">Espalda y pecho masculino de Stade Francais</div>
+          <div class="conclusion-text">Es el mayor déficit del segundo club general: cero presencia en espalda y pecho varones en ninguna categoría. Dado que Szigethi y Astorga son combinados (200IM), el déficit técnico de estilos puros masculinos limita el potencial de puntos del club en el mediano plazo.</div>
+        </div>
+      </div>
+      <div class="conclusion">
+        <div class="conclusion-num">5</div>
+        <div>
+          <div class="conclusion-title">Fondo largo masculino — brecha de 4 clubes</div>
+          <div class="conclusion-text">800L y 1500L varones son territorios sin cubrir para Estadio Mayor, Stade Francais, Stadio Italiano y CD UC. Solo Talca (Tapia 1°, Gutiérrez 2°) domina estas pruebas. Las pruebas de fondo distribuyen puntos concentrados: 9+7 pts garantizados para quien tenga un fondista formado.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Lectura de conjunto:</strong> Los tres denominadores comunes entre los 5 clubes son el pecho femenino, la categoría 10 años y la dependencia de individualidades únicas. Quien resuelva primero estas tres variables —especialmente el trabajo formativo de base— construye ventaja estructural, no solo táctica, de cara a los próximos campeonatos.
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>Club Deportivo USS</strong> · Informe elaborado por Prof. Claudio Alejandro Toledo Guzmán<br>
+  Coordinador Técnico y Gestor de Datos · Head Coach Natación Competitiva USS y PUC<br>
+  Fuente: resultados oficiales HY-TEK Meet Manager 8.0 · Campeonato Nacional Infantil de Invierno 2026 · 18-21 junio 2026
+</footer>
+
+<script>
+const tc = '#888780';
+const gc = 'rgba(0,0,0,0.06)';
+
+new Chart(document.getElementById('chartPresencia'), {
+  type: 'bar',
+  data: {
+    labels: ['CD Est. Mayor','Stade Fran.','Asoc. Talca','Asoc. Valp.','CD UC','Puertas Sol','Stadio Ital.','Polaris','Nielol SF','Los Lagos','Orcas','Coquimbo'],
+    datasets: [
+      { label: 'Finales individuales', data: [24,20,17,14,14,13,12,10,10,9,8,6], backgroundColor: '#185FA5', borderWidth:0 },
+      { label: 'Relevos (finales)',     data: [8,7,6,6,5,5,5,4,4,4,3,3],          backgroundColor: '#1D9E75', borderWidth:0 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      x:{ stacked:true, ticks:{ color:tc, font:{size:11} }, grid:{ display:false } },
+      y:{ stacked:true, ticks:{ color:tc, font:{size:11} }, grid:{ color:gc } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chartPruebas'), {
+  type: 'bar',
+  data: {
+    labels: ['Est. Mayor','Stade Fran.','Talca','CD UC','Puertas Sol','CS Maipu','Stadio Ital.','Nielol','Los Lagos','Valparaíso'],
+    datasets: [
+      { label: '400 libre',      data: [5,5,2,3,2,2,1,2,0,0], backgroundColor:'#185FA5', borderWidth:0 },
+      { label: '200 combinado',  data: [8,5,1,3,1,0,3,2,1,1], backgroundColor:'#534AB7', borderWidth:0 }
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false } },
+    scales:{
+      x:{ ticks:{ color:tc, font:{size:11}, autoSkip:false, maxRotation:30 }, grid:{ display:false } },
+      y:{ ticks:{ color:tc, font:{size:11}, stepSize:1 }, grid:{ color:gc } }
+    }
+  }
+});
+
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if(link) link.classList.add('active');
+    }
+  });
+}, { threshold:0.25 });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
